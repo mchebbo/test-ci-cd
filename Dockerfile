@@ -1,9 +1,7 @@
 FROM python:3.12.8-slim
 
-#Do not use env as this would persist after the build and would impact your containers, children images
 ARG DEBIAN_FRONTEND=noninteractive
 
-# force the stdout and stderr streams to be unbuffered.
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -21,8 +19,7 @@ ENV PATH="${PATH}:/home/runner/.local/bin"
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install --no-cache-dir --upgrade pip==24.3.1 \
-    && pip install --no-cache-dir poetry==2.2.1 \
+RUN pip install --no-cache-dir poetry==2.2.1 \
     && poetry install --only main
 
 COPY app/ app/
@@ -31,4 +28,4 @@ EXPOSE 8000
 
 ENTRYPOINT [ "poetry", "run" ]
 
-CMD ["sh","-c","uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
+CMD [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT" ]
